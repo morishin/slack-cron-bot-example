@@ -1,0 +1,26 @@
+name: CDK deploy
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    name: CDK deoloy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.4.1
+        with:
+          node-version: "14"
+      - name: Setup AWS CDK
+        run: npm install -g aws-cdk@1.134.0
+      - name: Setup Dependencies
+        run: npm ci
+      - name: CDK deploy
+        run: cdk deploy --require-approval never
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SLACK_INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
